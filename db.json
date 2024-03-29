@@ -1,0 +1,93 @@
+
+{
+  "quizzes": [
+    {
+      "title": "Basic Programming",
+      "questions": [
+        {
+          "question": "What does the keyword 'if' do in programming?",
+          "answers": [
+            { "text": "Defines a loop that repeats a block of code", "correct": false },
+            { "text": "Checks a condition and executes code if it's true", "correct": true },
+            { "text": "Defines a function to perform a specific task", "correct": false }
+          ]
+        },
+        {
+          "question": "What is a variable in programming?",
+          "answers": [
+            { "text": "A named storage location to hold data", "correct": true },
+            { "text": "A keyword used to control program flow", "correct": false },
+            { "text": "A block of code that can be reused", "correct": false }
+          ]
+        },
+        {
+          "question": "What does the code `console.log('Hello World!')` do?",
+          "answers": [
+            { "text": "Prints the message 'Hello World!' to the browser console", "correct": true },
+            { "text": "Defines a variable named 'Hello World!'", "correct": false },
+            { "text": "Creates a loop that repeats endlessly", "correct": false }
+          ]
+        },
+        {
+          "question": "What is the purpose of a loop in programming?",
+          "answers": [
+            { "text": "To repeat a block of code a specific number of times", "correct": false },
+            { "text": "To repeat a block of code until a condition is met", "correct": true },
+            { "text": "To define a function with multiple steps", "correct": false }
+          ]
+        },
+        {
+          "question": "What does a function in programming do?",
+          "answers": [
+            { "text": "Defines a reusable block of code to perform a task", "correct": true },
+            { "text": "Stores data that can be accessed throughout the program", "correct": false },
+            { "text": "Controls the overall flow of the program", "correct": false }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Advanced Concepts",
+      "questions": [
+        {
+          "question": "What is the difference between recursion and iteration?",
+          "answers": [
+            { "text": "Recursion calls itself, while iteration uses a loop", "correct": true },
+            { "text": "Recursion is for simple tasks, while iteration is for complex ones", "correct": false },
+            { "text": "There's no difference, they are the same concept", "correct": false }
+          ]
+        },
+        {
+          "question": "What is the purpose of object-oriented programming (OOP)?",
+          "answers": [
+            { "text": "To organize code into reusable modules with properties and methods", "correct": true },
+            { "text": "To improve the speed and performance of programs", "correct": false },
+            { "text": "To simplify complex calculations with mathematical functions", "correct": false }
+          ]
+        },
+        {
+          "question": "What are closures in JavaScript?",
+          "answers": [
+            { "text": "Functions that can access and retain variables from their outer scope", "correct": true },
+            { "text": "Special data types used to store large amounts of data", "correct": false },
+            { "text": "Keywords used to control program flow (e.g., if, else)", "correct": false }
+          ]
+        },
+        {
+          "question": "What is the Single Page Application (SPA) development approach?",
+          "answers": [
+            { "text": "Creates a dynamic web app with a single HTML page that updates content without full page reloads", "correct": true },
+            { "text": "A framework for building responsive websites that adapt to different screen sizes", "correct": false },
+            { "text": "A method for securing web applications from unauthorized access", "correct": false }
+          ]
+        },
+        {
+          "question": "What does asynchronous programming allow for?",
+          "answers": [
+            { "text": "Executing multiple tasks concurrently without blocking the main thread", "correct": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

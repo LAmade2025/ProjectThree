@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="ProjectStyle.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   
+    <script src="node_modules/handlebars/dist/handlebars.js"></script>
+
+    <title>Online Quiz App</title>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div id="starting-page">
+            <h1>Welcome to the Online Quiz!</h1>
+            <p>Enter your name:</p>
+            <input type="text" id="userName" placeholder="Enter your name">
+            <p>Select a quiz:</p>
+            <form id="startQuizForm">
+                <select id="quizSelection">
+                    <option value="quiz1">Quiz 1: Basic Programming</option>
+                    <option value="quiz2">Quiz 2: Advanced Concepts</option>
+                </select>
+                <button id="startQuizButton" type="submit">Start Quiz</button>
+            </form>
+        </div>
+
+        <div id="quiz-view" style="display: none;">
+            <h2>Quiz</h2>
+            <div id="question-area"></div>
+            <div id="answer-interface"></div>
+            <div id="feedback-area"></div>
+            <button id="nextQuestionButton">Next Question</button>
+            <button id="submitButton" style="display: none;">Submit Answers</button>
+        </div>
+
+        <div id="final-result" style="display: none;">
+            <h2>Result</h2>
+            <p id="result-message"></p>
+            <button id="retakeButton">Re-take Quiz</button>
+            <button id="backButton">Return to Main Page</button>
+        </div>
+    </div>
+
+
+    <script id="quiz-view-template" type="text/x-handlebars-template">
+        <h3>{{title}}</h3>
+        <p>{{question}}</p>
+        {{#each answers}}
+            <input type="radio" name="answer" value="{{text}}"> {{text}}<br>
+        {{/each}}
+    </script>
+
+    
+    <script src="projectScript.js"></script>
+</body>
+
+</html>
