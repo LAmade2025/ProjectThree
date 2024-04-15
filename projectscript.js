@@ -1,114 +1,191 @@
 document.addEventListener('DOMContentLoaded', function () {
-  let currentQuiz = null;
-  let currentQuestion = null;
-  let userScore = 0;
-  let userName = "";
+    let quizData = null;
+    let currentQuestionIndex = 0;
+    let currentQuizIndex = 0;
+    let userScore = 0;
+    let userName = "";
+    let startTime = null;
+    let endTime = null;
+    let elapsedTime = 0;
+    let totalQuestions = 0;
 
-  const startQuizForm = document.getElementById('startQuizForm');
-  startQuizForm.addEventListener('submit', handleStartQuiz);
+    const startQuizForm = document.getElementById('startQuizForm');
+    startQuizForm.addEventListener('submit', handleStartQuiz);
 
-  async function loadQuizData() {
-      try {
-          const response = await fetch(`http://localhost:3000/quizzes`);
-          if (!response.ok) {
-              throw new Error(`Failed to fetch quiz data: ${response.status}`);
-          }
-          return await response.json();
-      } catch (error) {
-          console.error("Failed to fetch quiz data:", error);
-          return null;
-      }
-  }
+    async function loadQuizData() {
+        try {
+            console.log("Loading quiz data...");
+            const response = await fetch(`https://my-json-server.typicode.com/LAmade2025/Milestone3Project/quizzes`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch quiz data: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log("Quiz data:", data);
+            if (!data || !Array.isArray(data)) {
+                throw new Error("Invalid quiz data format");
+            }
+            return data;
+        } catch (error) {
+            console.error("Error fetching quiz data:", error);
+            return null;
+        }
+    }
 
-  async function handleStartQuiz(event) {
-      event.preventDefault();
+    async function handleStartQuiz(event) {
+        event.preventDefault();
+        console.log("Starting quiz...");
 
-      userName = document.getElementById('userName').value;
+        userName = document.getElementById('userName').value;
 
-      try {
-          currentQuiz = await loadQuizData();
+        try {
+            quizData = await loadQuizData();
 
-          if (currentQuiz) {
-              showQuizView();
-          } else {
-              console.error("Failed to load quiz data");
-          }
-      } catch (error) {
-          console.error("Error fetching quiz data:", error);
-      }
-  }
+            if (quizData) {
+                showQuizView();
+                startTime = new Date();
+            } else {
+                console.error("Failed to load quiz data");
+            }
+        } catch (error) {
+            console.error("Error fetching quiz data:", error);
+        }
+    }
 
-  function showQuizView() {
-      document.getElementById('starting-page').style.display = 'none';
-      document.getElementById('quiz-view').style.display = 'block';
-      renderQuestion();
-  }
+    function showQuizView() {
+        document.getElementById('starting-page').style.display = 'none';
+        document.getElementById('quiz-view').style.display = 'block';
+        totalQuestions = countTotalQuestions();
+        renderQuestion();
+    }
 
-  function renderQuestion() {
-      if (!currentQuiz || !currentQuiz.questions.length) {
-          console.error("No questions available");
-          return;
-      }
+    function renderQuestion() {
+        const currentQuiz = quizData[currentQuizIndex];
+        if (!currentQuiz) {
+            console.error("No quiz available");
+            return;
+        }
 
-      currentQuestion = currentQuiz.questions.shift(); // Remove the first question from the list
+        const currentQuestion = currentQuiz.questions[currentQuestionIndex];
+        if (!currentQuestion) {
+            console.error("Invalid question format");
+            return;
+        }
 
-      const quizViewData = {
-          title: currentQuiz.title,
-          question: currentQuestion.question,
-          answers: currentQuestion.answers,
-      };
+        const quizViewData = {
+            title: currentQuiz.title,
+            question: currentQuestion.question,
+            answers: currentQuestion.answers,
+        };
 
-      const quizViewHTML = generateQuizViewHTML(quizViewData);
-      document.getElementById('question-area').innerHTML = quizViewHTML;
+        const quizViewHTML = generateQuizViewHTML(quizViewData);
+        document.getElementById('question-area').innerHTML = quizViewHTML;
 
-      const submitAnswerButton = document.getElementById('submitButton');
-      submitAnswerButton.addEventListener('click', handleAnswerSubmission);
-  }
+        updateScoreboard();
 
-  function generateQuizViewHTML(data) {
-      const source = document.getElementById('quiz-view-template').innerHTML;
-      const template = Handlebars.compile(source);
-      return template(data);
-  }
+        const submitAnswerButton = document.getElementById('submitButton');
+        submitAnswerButton.addEventListener('click', handleAnswerSubmission);
 
-  function handleAnswerSubmission(event) {
-      event.preventDefault(); 
+        const nextQuestionButton = document.getElementById('nextQuestionButton');
+        nextQuestionButton.removeEventListener('click', goToNextQuestion); // Remove existing event listener
+        nextQuestionButton.addEventListener('click', goToNextQuestion);
+    }
 
-      const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-      if (!selectedAnswer) {
-          console.error("No answer selected");
-          return;
-      }
+    function generateQuizViewHTML(data) {
+        let html = `<h3>${data.title}</h3>`;
+        html += `<p>${data.question}</p>`;
+        data.answers.forEach((answer, index) => {
+            html += `<input type="radio" name="answer" value="${answer.text}" id="answer${index}">
+                     <label for="answer${index}">${answer.text}</label><br>`;
+        });
+        return html;
+    }
 
-      const userAnswer = selectedAnswer.value;
+    function handleAnswerSubmission(event) {
+        event.preventDefault(); 
 
-      if (userAnswer) {
-          const isCorrect = checkAnswer(userAnswer, currentQuestion.answers);
-          if (isCorrect) {
-              userScore++;
-          }
+        const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+        if (!selectedAnswer) {
+            console.error("No answer selected");
+            return;
+        }
 
-          showAnswerFeedback(isCorrect);
+        const userAnswer = selectedAnswer.value;
+        const currentQuiz = quizData[currentQuizIndex];
+        const currentQuestion = currentQuiz.questions[currentQuestionIndex];
 
-          if (currentQuiz.questions.length > 0) {
-              renderQuestion(); // Render the next question
-          } else {
-              // Handle end of quiz (e.g., show final result)
-          }
-      }
-  }
+        if (userAnswer && checkAnswer(userAnswer, currentQuestion.answers)) {
+            userScore++;
+            showFeedbackMessage("Brilliant!");
+        } else {
+            showFeedbackMessage("Incorrect!");
+        }
+    }
 
-  function checkAnswer(userAnswer, correctAnswers) {
-      for (const answer of correctAnswers) {
-          if (answer.text === userAnswer && answer.correct) {
-              return true;
-          }
-      }
-      return false;
-  }
+    function showFeedbackMessage(message) {
+        const feedbackArea = document.getElementById('feedback-area');
+        feedbackArea.textContent = message;
+        feedbackArea.style.display = 'block';
 
-  
-  function showAnswerFeedback(isCorrect) {
-      
-  }
+        
+        setTimeout(function() {
+            feedbackArea.style.display = 'none';
+            renderQuestion(); 
+        }, 1000);
+    }
+
+    function goToNextQuestion(event) {
+        event.preventDefault(); 
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData[currentQuizIndex].questions.length) {
+            renderQuestion();
+        } else {
+            endTime = new Date(); 
+            showEndOfQuiz();
+        }
+    }
+
+    function checkAnswer(userAnswer, correctAnswers) {
+        
+        const userAnswerBool = userAnswer.toLowerCase() === 'true';
+
+       
+        return correctAnswers.some(answer => answer.correct === userAnswerBool);
+    }
+
+    function countTotalQuestions() {
+        let count = 0;
+        quizData.forEach(quiz => {
+            count += quiz.questions.length;
+        });
+        return count;
+    }
+
+    function updateScoreboard() {
+        const scoreboard = document.getElementById('scoreboard');
+        const questionsAnswered = currentQuestionIndex + 1;
+        const totalQuestionsInQuiz = quizData[currentQuizIndex].questions.length;
+        const totalQuestions = Math.min(totalQuestionsInQuiz, 6); 
+        const currentTime = new Date();
+        elapsedTime = Math.floor((currentTime - startTime) / 1000); 
+        scoreboard.innerHTML = `
+            <p>Question's Answered ${questionsAnswered} / 6</p>
+            <p>Elapsed Time: ${elapsedTime} seconds</p>
+            <p> Score ${userScore} / 6</p>
+        `;
+    }
+
+    function showEndOfQuiz() {
+        const finalResult = document.getElementById('final-result');
+        const resultMessage = document.getElementById('result-message');
+
+        updateScoreboard(); 
+
+        if (userScore / 6 >= 0.8) {
+            resultMessage.textContent = `Congratulations ${userName}! You pass the quiz`;
+        } else {
+            resultMessage.textContent = `Sorry ${userName}, you fail the quiz`;
+        }
+
+        finalResult.style.display = 'block';
+    }
 });
