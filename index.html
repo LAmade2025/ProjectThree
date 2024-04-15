@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,7 +33,7 @@
             <h2>Quiz</h2>
             <div id="question-area"></div>
             <div id="answer-interface"></div>
-            <div id="feedback-area"></div>
+            <div id="feedback-area" style="display: none;"></div>
             <button id="nextQuestionButton">Next Question</button>
             <button id="submitButton" style="display: none;">Submit Answers</button>
         </div>
@@ -45,6 +44,9 @@
             <button id="retakeButton">Re-take Quiz</button>
             <button id="backButton">Return to Main Page</button>
         </div>
+
+       
+        <div id="scoreboard"></div>
     </div>
 
 
@@ -55,6 +57,12 @@
             <input type="radio" name="answer" value="{{text}}"> {{text}}<br>
         {{/each}}
     </script>
+
+    
+    <script src="projectscript.js"></script>
+</body>
+
+</html>
 
     
     <script src="projectScript.js"></script>
